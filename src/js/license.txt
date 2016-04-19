@@ -1,0 +1,5 @@
+"Academic and non-commercial users may use mxGraph freely. Note that using mxGraph internally within a company is not non-commercial use."
+Source (Discontinued Q&A site) - http://forum.jgraph.com/questions/7/how-to-evaluate-mxgraph
+
+Unless something has changed on the main site:
+https://jgraph.github.io/mxgraph/

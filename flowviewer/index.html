@@ -1,0 +1,438 @@
+
+<!--
+  Copyright (c) 2006-2013, JGraph Ltd
+
+  Hello, World! example for mxGraph. This example demonstrates using
+  a DOM node to create a graph and adding vertices and edges.
+-->
+<html>
+<head>
+	<title>Automagic Flow Viewer</title>
+
+	<!-- Sets the basepath for the library if not in same directory -->
+	<script type="text/javascript">
+		mxBasePath = '../src';
+	</script>
+
+	<!-- Loads and initializes the library -->
+	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+
+	<!-- Example code -->
+	<script type="text/javascript">
+		var flowXMLFilePath = 'examples/FlashlightSOS.xml';
+		var mxGraphContainer;
+		var mxGraphFlowViewer;
+
+		// Program starts here. Creates a sample graph in the
+		// DOM node with the specified ID. This function is invoked
+		// from the onLoad event handler of the document (see below).
+		function main(container)
+		{
+			mxGraphContainer = container;
+			// Checks if the browser is supported
+			if (!mxClient.isBrowserSupported())
+			{
+				// Displays an error message if the browser is not supported.
+				mxUtils.error('Browser is not supported!', 200, false);
+			}
+			else
+			{
+				// document.getElementById("p2")
+				container.style.width = window.innerWidth + "px";
+				container.style.height = window.innerHeight + "px";
+
+				// Disables the built-in context menu
+				mxEvent.disableContextMenu(container);
+
+				// Loads the Automagic flow file format (XML file)
+				LoadFlowXML(flowXMLFilePath);
+
+				if (container.addEventListener) {
+					// IE9, Chrome, Safari, Opera
+					container.addEventListener("mousewheel", MouseWheelHandler, false);
+					// Firefox
+					container.addEventListener("DOMMouseScroll", MouseWheelHandler, false);
+				}
+				// IE 6/7/8
+				else container.attachEvent("onmousewheel", MouseWheelHandler);
+			}
+		};
+
+		// Parses the mxGraph XML file format
+		function LoadFlowXML(filename)
+		{
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == 4 && xhttp.status == 200) {
+					FlowXMLLoaded(xhttp);
+				}
+			};
+			xhttp.open("GET", filename, true);
+			xhttp.send();
+		};
+
+		function FlowXMLLoaded(xml) {
+			// Creates the graph inside the given container
+			var graph = new mxGraph(mxGraphContainer);
+			mxGraphFlowViewer = graph;
+			// graph.gridEnabled = true;
+			// graph.gridSize = 10;
+			graph.setGridEnabled(true);
+			graph.setGridSize(10);
+			graph.graphHandler.scaleGrid = true;
+			graph.panningHandler.ignoreCell = true;
+			graph.setPanning(true);
+			graph.htmlLabels = true;
+			graph.cellsEditable = false;
+			graph.cellsDeletable = false;
+			graph.cellsResizable = false;
+			graph.cellsBendable = false;
+			graph.cellsSelectable = false;
+			graph.cellsDisconnectable = false;
+			graph.edgeLabelsMovable = false;
+
+			// Automatically handle parallel edges
+			// var layout = new mxParallelEdgeLayout(graph);
+			// Orthogonal
+			// var layout = new mxOrthogonalLayout(graph, true);
+
+			// var layoutMgr = new mxLayoutManager(graph);
+
+			// layoutMgr.getLayout = function(cell)
+			// {
+			// 	if (cell.getChildCount() > 0)
+			// 	{
+			// 		return layout;
+			// 	}
+			// };
+
+			// Override default styles
+			// Element
+			var style = graph.getStylesheet().getDefaultVertexStyle();
+			style[mxConstants.STYLE_FONTSIZE] = 15;
+			style[mxConstants.STYLE_FONTCOLOR] = "#ffffff";
+			style[mxConstants.STYLE_WHITE_SPACE] = "wrap";
+			style[mxConstants.STYLE_FILLCOLOR] = "#103f49";
+			style[mxConstants.STYLE_STROKECOLOR] = "#22c0f0";
+			style[mxConstants.STYLE_STROKEWIDTH] = 1.5;
+
+			// Connection
+			style = graph.getStylesheet().getDefaultEdgeStyle();
+			style[mxConstants.STYLE_FONTSIZE] = 15;
+			style[mxConstants.STYLE_FONTCOLOR] = "#ffffff";
+			style[mxConstants.STYLE_STROKECOLOR] = "#77a8ac";
+			style[mxConstants.STYLE_STROKEWIDTH] = 1.5;
+			style[mxConstants.STYLE_ORTHOGONAL] = true;
+			// style[mxConstants.STYLE_ENTRY_PERIMETER] = false;
+			// style[mxConstants.STYLE_EXIT_PERIMETER] = false;
+			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_BOTTOM;
+			// style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+			style[mxConstants.STYLE_EDGE] = mxEdgeStyle.OrthConnector;
+			style[mxConstants.STYLE_JETTY_SIZE] = "auto";
+
+			// Styles:
+			// Directional connections
+
+			var style = new Object();
+			style[mxConstants.STYLE_ROUTING_CENTER_X] = 0;
+			style[mxConstants.STYLE_ROUTING_CENTER_Y] = 0.5;
+			graph.getStylesheet().putCellStyle('GONORTH',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_ROUTING_CENTER_X] = 0.5;
+			style[mxConstants.STYLE_ROUTING_CENTER_Y] = 0;
+			graph.getStylesheet().putCellStyle('GOEAST',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_ROUTING_CENTER_X] = 0;
+			style[mxConstants.STYLE_ROUTING_CENTER_Y] = -0.5;
+			graph.getStylesheet().putCellStyle('GOSOUTH',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_ROUTING_CENTER_X] = -0.5;
+			style[mxConstants.STYLE_ROUTING_CENTER_Y] = 0;
+			graph.getStylesheet().putCellStyle('GOWEST',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_EXIT_X] = 0.5;
+			style[mxConstants.STYLE_EXIT_Y] = 0;
+			graph.getStylesheet().putCellStyle('SOURCE_NORTH',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_EXIT_X] = 1;
+			style[mxConstants.STYLE_EXIT_Y] = 0.5;
+			graph.getStylesheet().putCellStyle('SOURCE_EAST',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_EXIT_X] = 0.5;
+			style[mxConstants.STYLE_EXIT_Y] = 1;
+			graph.getStylesheet().putCellStyle('SOURCE_SOUTH',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_EXIT_X] = -0.5;
+			style[mxConstants.STYLE_EXIT_Y] = 0.5;
+			graph.getStylesheet().putCellStyle('SOURCE_WEST',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_ENTRY_X] = 0.5;
+			style[mxConstants.STYLE_ENTRY_Y] = 0;
+			graph.getStylesheet().putCellStyle('TARGET_NORTH',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_ENTRY_X] = 1;
+			style[mxConstants.STYLE_ENTRY_Y] = 0.5;
+			graph.getStylesheet().putCellStyle('TARGET_EAST',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_ENTRY_X] = 0.5;
+			style[mxConstants.STYLE_ENTRY_Y] = 1;
+			graph.getStylesheet().putCellStyle('TARGET_SOUTH',style);
+
+			var style = new Object();
+			style[mxConstants.STYLE_ENTRY_X] = -0.5;
+			style[mxConstants.STYLE_ENTRY_Y] = 0.5;
+			graph.getStylesheet().putCellStyle('TARGET_WEST',style);
+
+			// Trigger
+			var style = new Object();
+			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
+			style[mxConstants.STYLE_ROUNDED] = true;
+			style[mxConstants.STYLE_ARCSIZE] = 20;
+			graph.getStylesheet().putCellStyle('TRIGGER',style);
+
+			// Condition
+			var style = new Object();
+			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
+			graph.getStylesheet().putCellStyle('CONDITION',style);
+
+			// False condition connection
+			var style = new Object();
+			style[mxConstants.STYLE_DASHED] = true;
+			graph.getStylesheet().putCellStyle('DASHED',style);
+
+			// Enables rubberband selection
+			// new mxRubberband(graph);
+
+			// Gets the default parent for inserting new cells. This
+			// is normally the first child of the root (ie. layer 0).
+			var parent = graph.getDefaultParent();
+
+			// Adds cells to the model in a single step
+			graph.getModel().beginUpdate();
+			try
+			{
+				var xmlDoc = xml.responseXML;
+
+				var triggerContainers = xmlDoc.getElementsByTagName("triggercontainer");
+				var conditionContainers = xmlDoc.getElementsByTagName("conditioncontainer");
+				var actionContainers = xmlDoc.getElementsByTagName("actioncontainer");
+				var elementOffsets = GetOffsets(triggerContainers, conditionContainers, actionContainers);
+				var offsetX = Math.abs(elementOffsets.x);
+				var offsetY = Math.abs(elementOffsets.y);
+				var allElements = {};
+				for(var i in triggerContainers)
+				{
+					var triggerContainer = triggerContainers[i];
+					if(typeof triggerContainer.getAttribute != 'undefined')
+					{
+						var x = triggerContainer.getAttribute("x")*1;
+						var y = triggerContainer.getAttribute("y")*1 + 20;
+
+						var name = "";
+						var triggers = triggerContainer.getElementsByTagName("trigger");
+						for(var i2 in triggers)
+						{
+							if(triggers[i2].childNodes)
+							{
+								name += triggers[i2].innerHTML;
+							}
+						}
+
+						allElements[triggerContainer.getAttribute("id")] = graph.insertVertex(parent, null, name, x + offsetX, y + offsetY, 130, 100, 'TRIGGER;html=1');
+					}
+				}
+
+				for(var i in conditionContainers)
+				{
+					var conditionContainer = conditionContainers[i];
+					if(typeof conditionContainer.getAttribute != 'undefined')
+					{
+						var x = conditionContainer.getAttribute("x")*1;
+						var y = conditionContainer.getAttribute("y")*1;
+						allElements[conditionContainer.getAttribute("id")] = graph.insertVertex(parent, null, conditionContainer.innerHTML, x + offsetX, y + offsetY, 130, 100, 'CONDITION;html=1');
+					}
+				}
+
+				for(var i in actionContainers)
+				{
+					var actionContainer = actionContainers[i];
+					if(typeof actionContainer.getAttribute != 'undefined')
+					{
+						var x = actionContainer.getAttribute("x")*1;
+						var y = actionContainer.getAttribute("y")*1;
+
+						allElements[actionContainer.getAttribute("id")] = graph.insertVertex(parent, null, actionContainer.innerHTML, x + offsetX, y + offsetY, 130, 100, 'html=1');
+					}
+				}
+
+				var connections = xmlDoc.getElementsByTagName("connection");
+				for(var i in connections)
+				{
+					var connection = connections[i];
+					if(typeof connection.getAttribute != 'undefined')
+					{
+						var from = connection.getAttribute("from");
+						var to = connection.getAttribute("to");
+						var type = connection.getAttribute("type");
+						var name = "";
+						if(type != "NORMAL")
+						{
+							name = type;
+							name = name.substring(0, 1) + name.substring(1, name.length).toLowerCase();
+						}
+
+						var style = "";
+						if(type == "FALSE")
+						{
+							style = "DASHED;";
+						}
+
+						var sourcePosition = connection.getAttribute("sourcePosition");
+						var targetPosition = connection.getAttribute("targetPosition");
+
+						// style += "sourcePort=" + sourcePosition.substring(0, 1).toLowerCase() + ";";
+						// style += "targetPort=" + targetPosition.substring(0, 1).toLowerCase() + ";";
+						style += "SOURCE_" + sourcePosition + ";";
+						// style += "GO" + sourcePosition + ";";
+						style += "TARGET_" + targetPosition + ";";
+
+						graph.insertEdge(parent, null, name, allElements[from], allElements[to], style);
+					}
+				}
+
+				// fit and center
+				// var margin = 2;
+				// var max = 3;
+
+				// var bounds = graph.getGraphBounds();
+				// var cw = graph.container.clientWidth - margin;
+				// var ch = graph.container.clientHeight - margin;
+				// var w = bounds.width / graph.view.scale;
+				// var h = bounds.height / graph.view.scale;
+				// var s = Math.min(max, Math.min(cw / w, ch / h));
+
+				// graph.view.scaleAndTranslate(s,
+				//   (margin + cw - w * s) / (2 * s) - bounds.x / graph.view.scale,
+				//   (margin + ch - h * s) / (2 * s) - bounds.y / graph.view.scale);
+
+				// lousy code, just fit then
+				graph.fit(0, false, 20);
+				// and maybe center to Trigger
+				// var triggerX = triggerContainers[0].getAttribute("x")*1;
+				// if(triggerX < 0)
+				// {
+				// 	w += triggerX;
+				// 	triggerX = Mathf.Abs(triggerX);
+				// }
+				// graph.center(true, false, triggerX / w);
+			}
+			finally
+			{
+				// Updates the display
+				graph.getModel().endUpdate();
+			}
+		}
+
+		function GetOffsets(triggerContainers, conditionContainers, actionContainers) {
+			var offsetX = 0;
+			var offsetY = 0;
+
+			for(var i in triggerContainers)
+			{
+				var triggerContainer = triggerContainers[i];
+				if(typeof triggerContainer.getAttribute != 'undefined')
+				{
+					var x = triggerContainer.getAttribute("x")*1;
+					if(x < offsetX)
+					{
+						offsetX = x;
+					}
+					var y = triggerContainer.getAttribute("y")*1;
+					if(y < offsetY)
+					{
+						offsetY = y;
+					}
+				}
+			}
+
+			for(var i in conditionContainers)
+			{
+				var conditionContainer = conditionContainers[i];
+				if(typeof conditionContainer.getAttribute != 'undefined')
+				{
+					var x = conditionContainer.getAttribute("x")*1;
+					if(x < offsetX)
+					{
+						offsetX = x;
+					}
+					var y = conditionContainer.getAttribute("y")*1;
+					if(y < offsetY)
+					{
+						offsetY = y;
+					}
+				}
+			}
+
+			for(var i in actionContainers)
+			{
+				var actionContainer = actionContainers[i];
+				if(typeof actionContainer.getAttribute != 'undefined')
+				{
+					var x = actionContainer.getAttribute("x")*1;
+					if(x < offsetX)
+					{
+						offsetX = x;
+					}
+					var y = actionContainer.getAttribute("y")*1;
+					if(y < offsetY)
+					{
+						offsetY = y;
+					}
+				}
+			}
+
+			return { x: offsetX, y: offsetY }
+		}
+
+		// function PlaceFlowElement(type) {
+
+		// }
+
+		function MouseWheelHandler(e) {
+			// cross-browser wheel delta
+			var e = window.event || e; // old IE support
+			var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+
+			// mxGraphFlowViewer.zoomTo(double, boolean)
+			// mxGraphFlowViewer.zoom(delta, { x: e.x, x: e.y });
+			if (delta < 0)
+			{
+				mxGraphFlowViewer.zoomOut();
+			}
+			else
+			{
+				mxGraphFlowViewer.zoomIn();
+			}
+		}
+	</script>
+</head>
+
+<!-- Page passes the container for the graph to the program -->
+<body onload="main(document.getElementById('graphContainer'))" style="margin: 0">
+
+	<!-- Creates a container for the graph with a grid wallpaper -->
+	<div id="graphContainer"
+		style="position:relative;overflow:hidden;width:768px;height:1280px;background:url('editors/images/grid.gif');cursor:default;">
+	</div>
+</body>
+</html>
