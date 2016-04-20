@@ -9,3 +9,6 @@ Backward and forward compatibility in question depending on change in structure 
 
 ## To test
 Since the index.html page tries to open another file, a webserver has to be set up, using "file://" to open the file on a browser will not work.
+
+As viewed on a Windows Google Chrome browser:
+![SOS](http://automagic4android.com/forum/download/file.php?id=698&sid=896a9ce04aa3f8e0d84fe326d0a0bf45)
