@@ -1,7 +1,7 @@
 # Automagic Flow Viewer (HTML/JavaScript)
 Recreates [Gridvision Engineering GmbH Automagic](http://automagic4android.com/en/)'s flow viewing by parsing flows XML files in HTML/JavaScript.
 
-Uses [jgraph](https://www.jgraph.com/)'s 'mxGraph' Javascript third party library. About Lincense check the file beside mxClient.js.
+Uses [jgraph](https://www.jgraph.com/)'s 'mxGraph' Javascript third party library. About the license of that library check the file beside mxClient.js.
 
 Built for [Automagic Premium](https://play.google.com/store/apps/details?id=ch.gridvision.ppam.androidautomagic) 1.30.0
 
